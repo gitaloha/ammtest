@@ -6,7 +6,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="ammtest.tencent.com.ammtest.CaseActivity">
+    tools:context="ammtest.tencent.com.accurate.CaseActivity">
 
 
     <LinearLayout
@@ -53,6 +53,11 @@
                 android:layout_height="wrap_content"
                 android:text="@string/case_ignore"
                 android:id="@+id/case_ignore_btn" />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/case_check"
+                android:id="@+id/case_check_btn" />
         </LinearLayout>
 
 

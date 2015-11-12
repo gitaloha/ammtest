@@ -18,6 +18,23 @@
 
     <string name="case_run">执行</string>
     <string name="case_ignore">忽略</string>
+    <string name="case_check">查看结果</string>
     <string name="case_stop">停止</string>
+
+    <string name="case_start_errmsg">开始执行case失败，确定是否是精准测试的包。如果是，请联系xiazeng...</string>
+    <string name="case_stop_errmsg">结束执行case失败，请联系xiazeng</string>
+    <string name="title_activity_case_result">CaseResultActivity</string>
+
+    <string name="check_thread_statistic">线程统计：</string>
+    <string name="check_method_statistic">函数统计：</string>
+
+    <string name="check_statistics_title">用例统计：</string>
+
+    <string name="check_detail_title">各线程详细信息：</string>
+
+    <string name="case_float_title">精准测试用例</string>
+    <string name="case_float_start">开始</string>
+    <string name="case_float_skip">跳过</string>
+    <string name="case_float_stop">停止</string>
 
 </resources>

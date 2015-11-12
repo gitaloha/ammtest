@@ -1,4 +1,4 @@
-package ammtest.tencent.com.ammtest.model;
+package ammtest.tencent.com.accurate.model;
 
 
 import android.content.Context;

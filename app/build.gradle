@@ -5,15 +5,19 @@ android {
     buildToolsVersion '23.0.1'
 
     defaultConfig {
-        applicationId "ammtest.tencent.com.ammtest"
+        applicationId "ammtest.tencent.com.accurate"
         minSdkVersion 16
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
     }
+
     buildTypes {
+        debug {
+            // debugģʽ
+        }
+
         release {
-            runProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }

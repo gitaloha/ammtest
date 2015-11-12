@@ -1,4 +1,4 @@
-package ammtest.tencent.com.ammtest;
+package ammtest.tencent.com.accurate;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -13,8 +13,8 @@ import android.widget.Toast;
 
 import java.util.List;
 
-import ammtest.tencent.com.ammtest.model.CaseEntryItem;
-import ammtest.tencent.com.ammtest.model.CaseModel;
+import ammtest.tencent.com.accurate.model.CaseEntryItem;
+import ammtest.tencent.com.accurate.model.CaseModel;
 
 
 public class MainActivity extends Activity {
@@ -35,10 +35,14 @@ public class MainActivity extends Activity {
         lsView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.i(TAG, "onclick"+position);
-                Intent intent = new Intent(MainActivity.this, CaseActivity.class);
-                intent.putExtra("caseid", caseItems.get(position).getCaseId());
-                startActivity(intent);
+                Log.i(TAG, "onclick" + position);
+                //Intent intent = new Intent(MainActivity.this, CaseActivity.class);
+                //intent.putExtra(Constant.INTENT_CASE_ID, caseItems.get(position).getCaseId());
+                //startActivity(intent);
+                Intent intent = new Intent(MainActivity.this, CaseDetailFloatService.class);
+                intent.putExtra(Constant.INTENT_CASE_ID, caseItems.get(position).getCaseId());
+                startService(intent);
+                finish();
                 //Toast.makeText(MainActivity.this, caseItems.get(position).getCaseName(), Toast.LENGTH_SHORT).show();
             }
         });

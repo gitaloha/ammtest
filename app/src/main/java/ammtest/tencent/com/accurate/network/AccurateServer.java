@@ -1,4 +1,4 @@
-package network;
+package ammtest.tencent.com.accurate.network;
 
 import java.io.IOException;
 import java.net.ServerSocket;

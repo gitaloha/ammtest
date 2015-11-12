@@ -1,7 +1,11 @@
-package ammtest.tencent.com.ammtest.model;
+package ammtest.tencent.com.accurate.model;
+
+import android.content.Context;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import ammtest.tencent.com.accurate.R;
 
 /**
  * Created by eureka on 11/12/15.
@@ -28,7 +32,7 @@ public class CaseModel {
     public List<CaseEntryItem> getAllCaseItems(){
         List<CaseEntryItem>  caseItems = new ArrayList<CaseEntryItem>();
         for (int i=0; i<10; i++){
-            caseItems.add(new CaseEntryItem("test"+i));
+            caseItems.add(new CaseEntryItem("test"+String.valueOf(i)));
         }
         return caseItems;
     }

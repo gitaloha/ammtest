@@ -1,4 +1,4 @@
-package ammtest.tencent.com.ammtest;
+package ammtest.tencent.com.accurate;
 
 import android.annotation.TargetApi;
 import android.content.Context;

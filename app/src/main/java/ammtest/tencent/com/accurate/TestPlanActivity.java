@@ -1,4 +1,4 @@
-package ammtest.tencent.com.ammtest;
+package ammtest.tencent.com.accurate;
 
 import android.app.Activity;
 import android.os.Bundle;

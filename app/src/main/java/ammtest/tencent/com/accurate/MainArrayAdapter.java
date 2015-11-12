@@ -1,4 +1,4 @@
-package ammtest.tencent.com.ammtest;
+package ammtest.tencent.com.accurate;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import ammtest.tencent.com.ammtest.model.CaseEntryItem;
+import ammtest.tencent.com.accurate.model.CaseEntryItem;
 
 /**
  * Created by eureka on 10/27/15.

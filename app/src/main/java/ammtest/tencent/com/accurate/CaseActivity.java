@@ -1,4 +1,4 @@
-package ammtest.tencent.com.ammtest;
+package ammtest.tencent.com.accurate;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -6,11 +6,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import ammtest.tencent.com.ammtest.model.CaseEntryItem;
-import ammtest.tencent.com.ammtest.model.CaseModel;
+import ammtest.tencent.com.accurate.model.CaseEntryItem;
+import ammtest.tencent.com.accurate.model.CaseModel;
 
 
 public class CaseActivity extends Activity {
@@ -20,7 +22,7 @@ public class CaseActivity extends Activity {
 
     void initView(){
         Intent intent = getIntent();
-        caseId = intent.getIntExtra("caseId", 0);
+        caseId = intent.getIntExtra(Constant.INTENT_CASE_ID, 0);
         CaseEntryItem entryItem = CaseModel.getInstance().getCaseItem(caseId);
         TextView titleTv = (TextView)findViewById(R.id.case_title);
         titleTv.setText(String.format("【%d】%s", caseId, entryItem.getCaseName()));
@@ -33,6 +35,26 @@ public class CaseActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_case);
         initView();
+        Button checkBtn = (Button)findViewById(R.id.case_check_btn);
+        checkBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(CaseActivity.this, CaseResultActivity.class);
+                intent.putExtra(Constant.INTENT_CASE_ID, caseId);
+                startActivity(intent);
+            }
+        });
+
+        Button runBtn = (Button)findViewById(R.id.case_run_btn);
+        runBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(CaseActivity.this, FloatService.class);
+                intent.putExtra(Constant.INTENT_CASE_ID, caseId);
+                startService(intent);
+                finish();
+            }
+        });
     }
 
     @Override

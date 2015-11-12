@@ -1,4 +1,7 @@
-package ammtest.tencent.com.ammtest.model;
+package ammtest.tencent.com.accurate.model;
+
+import android.nfc.Tag;
+import android.util.Log;
 
 import java.util.Random;
 
@@ -6,6 +9,8 @@ import java.util.Random;
  * Created by eureka on 10/27/15.
  */
 public class CaseEntryItem {
+    private static final String TAG = "ammtest.CaseEntryItem";
+
     public String getCaseName() {
         return caseName;
     }
@@ -21,7 +26,7 @@ public class CaseEntryItem {
     }
 
     String caseContent;
-    long caseId;
+    int caseId;
 
     public boolean isHasAuto() {
         return hasAuto;
@@ -34,12 +39,13 @@ public class CaseEntryItem {
     boolean hasAuto;
     int count;
 
-    public long getCaseId() {
+    public int getCaseId() {
         return caseId;
     }
 
     public CaseEntryItem(String name) {
         this.caseName = name;
+        Log.i(TAG, "CaseEntryItem:"+name);
         caseContent = "caseContentcaseContentcaseContentcaseContentcaseContentcaseContentcaseContentcaseContentcaseContent";
         hasAuto = false;
         count = 0;
