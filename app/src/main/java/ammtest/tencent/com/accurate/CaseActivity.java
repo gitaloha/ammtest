@@ -23,11 +23,11 @@ public class CaseActivity extends Activity {
     void initView(){
         Intent intent = getIntent();
         caseId = intent.getIntExtra(Constant.INTENT_CASE_ID, 0);
-        CaseEntryItem entryItem = CaseModel.getInstance().getCaseItem(caseId);
+        CaseEntryItem entryItem =new CaseModel(CaseActivity.this.getApplicationContext()).getCaseItem(caseId);
         TextView titleTv = (TextView)findViewById(R.id.case_title);
         titleTv.setText(String.format("【%d】%s", caseId, entryItem.getCaseName()));
         TextView contentTx = (TextView)findViewById(R.id.case_content);
-        contentTx.setText(entryItem.getCaseContent());
+        contentTx.setText(entryItem.getCaseModule());
     }
 
     @Override

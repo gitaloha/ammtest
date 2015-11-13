@@ -36,5 +36,11 @@
     <string name="case_float_start">开始</string>
     <string name="case_float_skip">跳过</string>
     <string name="case_float_stop">停止</string>
+    <string name="case_float_input">输入：</string>
+    <string name="case_float_output">输出：</string>
+    <string name="case_float_checkout">检查：</string>
+
+    <string name="provider_label">caseProvider</string>
+
 
 </resources>

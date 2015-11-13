@@ -53,6 +53,12 @@
             android:enabled="true"
             android:exported="true" >
         </service>
+
+        <provider android:name=".model.CaseProvider"
+            android:authorities="com.tencent.ammtest.mm.cases"
+            android:label="@string/provider_label"
+            android:multiprocess="false">
+        </provider>
     </application>
 
 </manifest>

@@ -39,12 +39,6 @@ public class MainArrayAdapter extends ArrayAdapter<CaseEntryItem> {
 
         TextView caseNameView = (TextView)caseLy.findViewById(R.id.case_item_name);
         caseNameView.setText(item.getCaseName());
-
-        TextView hasAutoView = (TextView)caseLy.findViewById(R.id.case_has_auto);
-        hasAutoView.setText(String.valueOf(item.isHasAuto()));
-
-
-
         return (LinearLayout)caseLy;
 
     }

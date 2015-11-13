@@ -11,10 +11,24 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+
+import com.loopj.android.http.JsonHttpResponseHandler;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.List;
 
 import ammtest.tencent.com.accurate.model.CaseEntryItem;
 import ammtest.tencent.com.accurate.model.CaseModel;
+import ammtest.tencent.com.accurate.network.AmmHttpClient;
 
 
 public class MainActivity extends Activity {
@@ -22,12 +36,14 @@ public class MainActivity extends Activity {
     private MainArrayAdapter caseEntryAA;
     private List<CaseEntryItem> caseItems;
     private String TAG = "ammtest.MainActivity";
+    private CaseModel mModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        caseItems = CaseModel.getInstance().getAllCaseItems();
+        mModel = new CaseModel(getApplicationContext());
+        caseItems = mModel.getAllCaseItems();
         caseEntryAA = new MainArrayAdapter(this, R.layout.case_item, caseItems);
         ListView lsView = (ListView)findViewById(R.id.main_case_ls);
         lsView.setAdapter(caseEntryAA);
@@ -46,7 +62,7 @@ public class MainActivity extends Activity {
                 //Toast.makeText(MainActivity.this, caseItems.get(position).getCaseName(), Toast.LENGTH_SHORT).show();
             }
         });
-
+        updateCase();
         /*
         Button btnAdd = (Button)findViewById(R.id.id_case_add_test);
         btnAdd.setOnClickListener(new View.OnClickListener() {
@@ -106,5 +122,33 @@ public class MainActivity extends Activity {
             startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void updateCase(){
+        AmmHttpClient.get("getjson.php", null, new JsonHttpResponseHandler(){
+
+            @Override
+            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, JSONArray response) {
+                super.onSuccess(statusCode, headers, response);
+                for(int i=0; i<response.length(); i++){
+                    try {
+                        JSONObject json = response.getJSONObject(i);
+                        CaseEntryItem caseEntry = new CaseEntryItem(json.getInt(CaseEntryItem.F_ID));
+                        caseEntry.setCaseName(json.getString(CaseEntryItem.F_CASE_NAME));
+                        caseEntry.setCaseInput(json.getString(CaseEntryItem.F_CASE_INPUT));
+                        caseEntry.setCaseOutput(json.getString(CaseEntryItem.F_CASE_OUTPUT));
+                        caseEntry.setCaseCheckList(json.getString(CaseEntryItem.F_CASE_CHECK_LIST));
+                        caseItems.add(caseEntry);
+                        mModel.insertCase(caseEntry);
+                        caseEntryAA.notifyDataSetChanged();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                Log.i(TAG, response.length() + "");
+                Log.i(TAG, response.toString());
+            }
+        });
+
     }
 }

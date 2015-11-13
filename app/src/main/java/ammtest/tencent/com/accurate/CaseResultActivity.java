@@ -48,7 +48,7 @@ public class CaseResultActivity extends Activity {
         setContentView(R.layout.activity_case_result);
         Intent intent = getIntent();
         intent.getIntExtra(Constant.INTENT_CASE_ID, 0);
-        caseEntryItem = CaseModel.getInstance().getCaseItem(caseId);
+        caseEntryItem = new CaseModel(getApplicationContext()).getCaseItem(caseId);
 
         new Thread(){
 

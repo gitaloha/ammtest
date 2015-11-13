@@ -22,6 +22,7 @@ import android.widget.Toast;
 import java.io.IOException;
 
 import ammtest.tencent.com.accurate.model.CaseEntryItem;
+import ammtest.tencent.com.accurate.model.CaseModel;
 import ammtest.tencent.com.accurate.network.AccurateClient;
 
 public class CaseDetailFloatService extends Service {
@@ -29,12 +30,13 @@ public class CaseDetailFloatService extends Service {
     private WindowManager wm;
     private LinearLayout mFloatLayout;
     private String TAG = "ammtest.CaseDetailFloatService";
-
+    int caseId;
     public CaseDetailFloatService() {
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        caseId = intent.getIntExtra(Constant.INTENT_CASE_ID, 0);
         creatFloatView();
         return super.onStartCommand(intent, flags, startId);
     }
@@ -54,7 +56,7 @@ public class CaseDetailFloatService extends Service {
     }
 
     public void creatFloatView(){
-        final CaseEntryItem caseEntryItem = new CaseEntryItem(getResources().getString(R.string.app_name));// CaseModel.getInstance().getCaseItem(caseId);
+        final CaseEntryItem caseEntryItem = new CaseModel(getApplicationContext()).getCaseItem(caseId);
         wmParams = new WindowManager.LayoutParams();
         Context context = getApplication();
         if(context == null){
@@ -81,6 +83,7 @@ public class CaseDetailFloatService extends Service {
         wm.addView(mFloatLayout, wmParams);
         LinearLayout mLy = (LinearLayout) mFloatLayout.findViewById(R.id.case_detail_float_ly);
 
+
         mFloatLayout.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
         Log.i(TAG, "Width/2--->" + mLy.getMeasuredWidth()/2);
@@ -94,6 +97,14 @@ public class CaseDetailFloatService extends Service {
             }
         });
 
+        TextView caseTitle = (TextView)mFloatLayout.findViewById(R.id.case_float_case_title);
+        caseTitle.setText(caseEntryItem.getCaseName());
+        TextView caseInput = (TextView)mFloatLayout.findViewById(R.id.case_float_input);
+        caseInput.setText(caseEntryItem.getCaseInput());
+        TextView caseOutput = (TextView)mFloatLayout.findViewById(R.id.case_float_output);
+        caseOutput.setText(caseEntryItem.getCaseOutput());
+        TextView caseCheck = (TextView)mFloatLayout.findViewById(R.id.case_float_case_check);
+        caseCheck.setText(caseEntryItem.getCaseCheckList());
 
     }
 }
