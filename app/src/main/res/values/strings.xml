@@ -3,7 +3,7 @@
 
     <string name="app_name">微信精准测试</string>
     <string name="hello_world">Hello world!</string>
-    <string name="action_settings">设置</string>
+
     <string name="float_start">Start</string>
     <string name="float_stop">Stop</string>
     <string name="title_activity_case">用例</string>
@@ -35,10 +35,15 @@
     <string name="case_float_title">精准测试用例</string>
     <string name="case_float_start">开始</string>
     <string name="case_float_skip">跳过</string>
-    <string name="case_float_stop">停止</string>
+    <string name="case_float_stop">关闭</string>
     <string name="case_float_input">输入：</string>
     <string name="case_float_output">输出：</string>
     <string name="case_float_checkout">检查：</string>
+
+    <string name="back">返回</string>
+
+    <string name="action_setting">设置</string>
+    <string name="action_new_case">设置</string>
 
     <string name="provider_label">caseProvider</string>
 

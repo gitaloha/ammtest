@@ -54,7 +54,7 @@ public class CaseModel {
         return count>0;
     }
 
-    public void insertCase(CaseEntryItem caseEntryItem) {
+    public Uri insertCase(CaseEntryItem caseEntryItem) {
         ContentValues values = new ContentValues();
         values.put(CaseEntryItem.F_ID, caseEntryItem.getCaseId());
         values.put(CaseEntryItem.F_CASE_NAME, caseEntryItem.getCaseName());
@@ -62,7 +62,8 @@ public class CaseModel {
         values.put(CaseEntryItem.F_CASE_OUTPUT, caseEntryItem.getCaseOutput());
         values.put(CaseEntryItem.F_CASE_CHECK_LIST, caseEntryItem.getCaseCheckList());
         Uri uri = ContentUris.withAppendedId(CaseEntryItem.CONTENT_CASEID_URI, caseEntryItem.getCaseId());
-        resolver.insert(uri, values);
+
+        return resolver.insert(uri, values);
     }
 
     public boolean updateCase(CaseEntryItem caseEntryItem) {

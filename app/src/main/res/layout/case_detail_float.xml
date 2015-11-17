@@ -2,34 +2,71 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="15dp"
-    android:id="@+id/case_detail_float_ly">
+    android:id="@+id/case_detail_float_ly"
+    android:background="#2F2F2F">
 
     <LinearLayout
         android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_margin="5dp"
+        android:layout_marginTop="5dp">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+        </LinearLayout>
 
         <TextView
-            android:layout_width="fill_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/case_float_title"
             android:id="@+id/textView3"
-            android:textSize="20dp" />
+            android:layout_marginLeft="5dp"
+            android:textSize="20dp"
+            android:padding="5dp" />
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/imageView2"
-            android:layout_gravity="center_horizontal" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/back"
+                android:id="@+id/case_float_stop_btn"
+                android:layout_gravity="right|center"
+                android:textSize="20dp"
+                android:padding="5dp"
+                android:layout_marginRight="5dp" />
+        </LinearLayout>
 
     </LinearLayout>
+    <View
+        android:layout_height="2dp"
+        android:layout_width="fill_parent"
+        android:background="#90909090"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:contextClickable="true" />
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
 
+        <TextView
+            android:layout_width="fill_parent"
+            android:text="asdadsada"
+            android:layout_height="wrap_content"
+            android:id="@+id/case_defail_tv"/>
+
+        <!--
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -98,30 +135,50 @@
             </LinearLayout>
 
         </LinearLayout>
+        -->
     </LinearLayout>
+    <View
+        android:layout_height="2dp"
+        android:layout_width="fill_parent"
+        android:background="#90909090"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp" />
+
+
 
     <LinearLayout
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|right">
 
-        <Button
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/case_float_start"
-            android:id="@+id/case_float_start_btn" />
+            android:layout_gravity="top">
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/case_float_skip"
-            android:id="@+id/case_float_skip_btn" />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/case_float_start"
+                android:id="@+id/case_float_start_btn" />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/case_float_stop"
-            android:id="@+id/case_float_stop_btn" />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/case_float_skip"
+                android:id="@+id/case_float_skip_btn" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/case_check"
+                android:id="@+id/case_check_btn"
+                android:enabled="false" />
+
+
+        </LinearLayout>
     </LinearLayout>
 
 </LinearLayout>

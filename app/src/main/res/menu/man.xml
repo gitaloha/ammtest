@@ -3,12 +3,12 @@
     tools:context=".ManActivity" >
 
     <item android:id="@+id/action_new_case"
-          android:title="@string/action_settings"
+          android:title="@string/action_new_case"
           android:orderInCategory="1"
         />
 
     <item android:id="@+id/action_settings"
-        android:title="@string/action_settings"
+        android:title="@string/action_setting"
         android:orderInCategory="1000"/>
 
 </menu>

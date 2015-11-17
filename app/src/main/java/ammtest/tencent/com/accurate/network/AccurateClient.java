@@ -38,34 +38,30 @@ public class AccurateClient {
     private String sendCmd(String msg) throws IOException {
         String response = null;
         Socket client;
-        try {
-            client = new Socket(host , port);
-            OutputStreamWriter writer = new OutputStreamWriter(client.getOutputStream());
-            InputStreamReader reader = new InputStreamReader(client.getInputStream());
-            BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
-            System.out.println("sendcmd:"+msg);
-            writer.write(msg.trim()+"\r\n");
-            writer.flush();
-            response =  br.readLine().trim();
-            System.out.println("response:"+response);
-            client.close();
-        } catch (UnknownHostException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        client = new Socket(host , port);
+        OutputStreamWriter writer = new OutputStreamWriter(client.getOutputStream());
+        InputStreamReader reader = new InputStreamReader(client.getInputStream());
+        BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
+        System.out.println("sendcmd:"+msg);
+        writer.write(msg.trim()+"\r\n");
+        writer.flush();
+        response =  br.readLine().trim();
+        System.out.println("response:"+response);
+        client.close();
         return response;
     }
 
-    public void startCase(String caseName) throws IOException {
-        String response = sendCmd(String.format("%s:%s", CMD_CASE_START, caseName));
+    public String startCase(String caseName) throws IOException {
+        String response = null;
+        response = sendCmd(String.format("%s:%s", CMD_CASE_START, caseName));
         Log.i(TAG, "startCase response:"+response);
+        return response;
     }
 
-    public void stopCase() throws IOException {
-        String response = sendCmd(String.format("%s:", CMD_CASE_STOP));
+    public String stopCase() throws IOException {
+        String response = null;
+        response = sendCmd(String.format("%s:", CMD_CASE_STOP));
         Log.i(TAG, "stopCase response:" + response);
+        return response;
     }
 }

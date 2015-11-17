@@ -46,6 +46,14 @@ public class CaseEntryItem {
     /*MIME*/
     public static final String CONTENT_TYPE_CASE = "vnd.android.cursor.dir/vnd.shy.luo.article";
 
+    public void updateFrom(CaseEntryItem other){
+        this.caseId = other.caseId;
+        this.caseInput = other.caseInput;
+        this.caseOutput = other.caseOutput;
+        this.caseCheckList = other.caseCheckList;
+        this.caseModule = other.caseModule;
+    }
+
     public String getCaseName() {
         return caseName;
     }
@@ -111,10 +119,7 @@ public class CaseEntryItem {
     }
 
 
-    @Override
-    public String toString() {
-        return caseName;
-    }
+
 
     public String getCaseInput() {
         return caseInput;
@@ -126,5 +131,19 @@ public class CaseEntryItem {
 
     public String getCaseCheckList() {
         return caseCheckList;
+    }
+
+    @Override
+    public String toString() {
+        return "CaseEntryItem{" +
+                "caseModule='" + caseModule + '\'' +
+                ", caseName='" + caseName + '\'' +
+                ", caseInput='" + caseInput + '\'' +
+                ", caseOutput='" + caseOutput + '\'' +
+                ", caseCheckList='" + caseCheckList + '\'' +
+                ", caseId=" + caseId +
+                ", hasAuto=" + hasAuto +
+                ", count=" + count +
+                '}';
     }
 }

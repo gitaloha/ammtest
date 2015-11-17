@@ -6,6 +6,7 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
@@ -25,7 +26,7 @@ public class CaseProvider extends ContentProvider {
 
     private static final UriMatcher uriMatcher;
     private static final String DB_NAME = "case";
-    private static final int DB_VERSION = 2;
+    private static final int DB_VERSION = 5;
     private static final String DB_TABLE = "case_tbl";
 
     static {
@@ -111,6 +112,11 @@ public class CaseProvider extends ContentProvider {
             default:
                 throw  new IllegalArgumentException("Error Uri: " + uri);
         }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
     }
 
     @Nullable
