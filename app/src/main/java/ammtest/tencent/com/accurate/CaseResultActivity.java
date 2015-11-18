@@ -1,5 +1,6 @@
 package ammtest.tencent.com.accurate;
 
+import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,6 +8,7 @@ import android.app.Activity;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -28,7 +30,7 @@ import java.util.Set;
 
 import ammtest.tencent.com.accurate.model.CaseEntryItem;
 
-public class CaseResultActivity extends Activity {
+public class CaseResultActivity extends BaseActivity {
     private  int caseId;
     private String TAG = "ammtest.CaseResultActivity";
     private CaseEntryItem caseEntryItem;
@@ -51,9 +53,29 @@ public class CaseResultActivity extends Activity {
             this.threadId = threadId;
         }
     }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (id == R.id.home) {
+            Intent intent = new Intent(CaseResultActivity.this, CaseDetailFloatService.class);
+            intent.putExtra(Constant.INTENT_CASE_ID, caseId);
+            startService(intent);
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ActionBar actionBar = getActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        setTitle(R.string.title_activity_result);
+
         setContentView(R.layout.activity_case_result);
         Intent intent = getIntent();
         caseId = intent.getIntExtra(Constant.INTENT_CASE_ID, 0);
@@ -177,6 +199,7 @@ public class CaseResultActivity extends Activity {
 
             TextView methodDistinctCount = (TextView)caseLy.findViewById(R.id.case_result_method_distinct_count);
             methodDistinctCount.setText(String.valueOf(item.methodDistinctCount));
+
             return (LinearLayout)caseLy;
         }
 

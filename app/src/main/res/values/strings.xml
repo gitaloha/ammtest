@@ -6,7 +6,7 @@
 
     <string name="float_start">Start</string>
     <string name="float_stop">Stop</string>
-    <string name="title_activity_case">用例</string>
+
     <string name="jicheng_case_title">集成用例</string>
     <string name="case_menu_save">save</string>
     <string name="title_activity_laucnch">LaucnchActivity</string>
@@ -14,14 +14,14 @@
     <string name="entry_jicheng">集成用例</string>
     <string name="entry_prompt">推荐用例</string>
     <string name="entry_auto">自动化用例</string>
-    <string name="title_activity_base">BaseActivity</string>
+
 
     <string name="case_run">执行</string>
     <string name="case_ignore">忽略</string>
     <string name="case_check">查看结果</string>
     <string name="case_stop">停止</string>
 
-    <string name="case_start_errmsg">开始执行case失败，确定是否是精准测试的包。如果是，请联系xiazeng...</string>
+    <string name="case_start_errmsg">开始执行case失败，确定是否是精准测试的包。请联系xiazeng...</string>
     <string name="case_stop_errmsg">结束执行case失败，请联系xiazeng</string>
     <string name="title_activity_case_result">CaseResultActivity</string>
 
@@ -34,6 +34,7 @@
 
     <string name="case_float_title">精准测试用例</string>
     <string name="case_float_start">开始</string>
+    <string name="case_float_pass">通过</string>
     <string name="case_float_skip">跳过</string>
     <string name="case_float_stop">关闭</string>
     <string name="case_float_input">输入：</string>
@@ -46,6 +47,9 @@
     <string name="action_new_case">设置</string>
 
     <string name="provider_label">caseProvider</string>
+
+    <string name="title_activity_result">用例执行结果</string>
+    <string name="title_activity_base">用例</string>
 
 
 </resources>

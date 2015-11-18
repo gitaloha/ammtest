@@ -21,6 +21,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.List;
 
+import ammtest.tencent.com.accurate.model.CaseChosenList;
 import ammtest.tencent.com.accurate.model.CaseEntryItem;
 import ammtest.tencent.com.accurate.model.CaseModel;
 import ammtest.tencent.com.accurate.network.AmmHttpClient;
@@ -39,6 +40,7 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
         mModel = new CaseModel(getApplicationContext());
         caseItems = mModel.getAllCaseItems();
+        CaseChosenList.getInstance().bindData(caseItems);
         caseEntryAA = new MainArrayAdapter(this, R.layout.case_item, caseItems);
         ListView lsView = (ListView)findViewById(R.id.main_case_ls);
         lsView.setAdapter(caseEntryAA);
@@ -54,7 +56,7 @@ public class MainActivity extends BaseActivity {
                 //Toast.makeText(MainActivity.this, caseItems.get(position).getCaseName(), Toast.LENGTH_SHORT).show();
             }
         });
-        boolean refresh = getIntent().getBooleanExtra(Constant.INTENT_CASE_REFRESH,  true);
+        boolean refresh = getIntent().getBooleanExtra(Constant.INTENT_CASE_REFRESH, true);
         if (refresh){
             updateCase();
         }

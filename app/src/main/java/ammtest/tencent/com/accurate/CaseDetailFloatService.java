@@ -21,13 +21,21 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.TextHttpResponseHandler;
+
 import org.w3c.dom.Text;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import ammtest.tencent.com.accurate.model.CaseChosenList;
 import ammtest.tencent.com.accurate.model.CaseEntryItem;
 import ammtest.tencent.com.accurate.model.CaseModel;
 import ammtest.tencent.com.accurate.network.AccurateClient;
+import ammtest.tencent.com.accurate.network.AmmHttpClient;
+import cz.msebera.android.httpclient.Header;
 
 public class CaseDetailFloatService extends Service {
     private WindowManager.LayoutParams wmParams;
@@ -36,6 +44,7 @@ public class CaseDetailFloatService extends Service {
     private String TAG = "ammtest.CaseDetailFloatService";
     private String caseFileName = null;
     int caseId;
+
     public CaseDetailFloatService() {
     }
 
@@ -44,6 +53,7 @@ public class CaseDetailFloatService extends Service {
         caseId = intent.getIntExtra(Constant.INTENT_CASE_ID, 0);
         caseFileName = intent.getStringExtra(Constant.INTENT_CASE_FILENAME);
         creatFloatView();
+
         return START_NOT_STICKY;
     }
 
@@ -105,44 +115,94 @@ public class CaseDetailFloatService extends Service {
         stopBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
                 Intent intent = new Intent(CaseDetailFloatService.this, MainActivity.class);
                 intent.putExtra(Constant.INTENT_CASE_REFRESH, false);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
+                finish();
             }
         });
 
         Button checkBtn = (Button)mFloatLayout.findViewById(R.id.case_check_btn);
-        if(caseFileName != null){
-            checkBtn.setVisibility(View.VISIBLE);
-            checkBtn.setEnabled(true);
-            checkBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(CaseDetailFloatService.this, CaseResultActivity.class);
-                    intent.putExtra(Constant.INTENT_CASE_FILENAME, caseFileName);
-                    intent.putExtra(Constant.INTENT_CASE_ID, caseId);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
-                    finish();
-                }
-            });
-        }else {
-            checkBtn.setEnabled(true);
-        }
-
-
-        Button startBtn = (Button)mFloatLayout.findViewById(R.id.case_float_start_btn);
-        startBtn.setOnClickListener(new View.OnClickListener() {
+        checkBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(CaseDetailFloatService.this, FloatService.class);
+                if (caseFileName == null){
+                    Log.e(TAG, "checkBtn caseFileName = null");
+                    return;
+                }
+                Intent intent = new Intent(CaseDetailFloatService.this, CaseResultActivity.class);
+                intent.putExtra(Constant.INTENT_CASE_FILENAME, caseFileName);
                 intent.putExtra(Constant.INTENT_CASE_ID, caseId);
-                startService(intent);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
                 finish();
             }
         });
+
+        Button skipBtn = (Button)mFloatLayout.findViewById(R.id.case_float_skip_btn);
+        skipBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeToNextCase();
+            }
+        });
+
+
+        final Button startBtn = (Button)mFloatLayout.findViewById(R.id.case_float_start_btn);
+        startBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(hasRan()){
+                    startBtn.setText(R.string.case_float_pass);
+                }else{
+                    startBtn.setText(R.string.case_float_start);
+                }
+                if(hasRan()){
+                    uploadResult(caseFileName);
+                    changeToNextCase();
+                }else{
+                    Intent intent = new Intent(CaseDetailFloatService.this, FloatService.class);
+                    intent.putExtra(Constant.INTENT_CASE_ID, caseId);
+                    startService(intent);
+                    finish();
+                }
+
+            }
+        });
+
+        renderContent(caseEntryItem);
+    }
+
+    private void changeToNextCase(){
+        CaseChosenList caseList = CaseChosenList.getInstance();
+        CaseEntryItem caseEntry = caseList.getNextCase(caseId);
+        if (caseEntry == null){
+            //no next
+            finish();
+            Intent intent = new Intent(CaseDetailFloatService.this, CaseResultActivity.class);
+            intent.putExtra(Constant.INTENT_CASE_FILENAME, caseFileName);
+            intent.putExtra(Constant.INTENT_CASE_ID, caseId);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            return;
+        }
+        caseId = caseEntry.getCaseId();
+        //upload
+        setNotRan();
+        renderContent(caseEntry);
+    }
+
+    private void renderContent(CaseEntryItem caseEntryItem ){
+        if(mFloatLayout == null){
+            return;
+        }
+        Button startBtn = (Button)mFloatLayout.findViewById(R.id.case_float_start_btn);
+        if(hasRan()){
+            startBtn.setText(R.string.case_float_pass);
+        }else{
+            startBtn.setText(R.string.case_float_start);
+        }
         TextView caseTv = (TextView)mFloatLayout.findViewById(R.id.case_defail_tv);
         StringBuilder sb = new StringBuilder();
         sb.append("<html><body>");
@@ -173,21 +233,47 @@ public class CaseDetailFloatService extends Service {
         Log.i(TAG, sb.toString());
         caseTv.setMovementMethod(ScrollingMovementMethod.getInstance());
         caseTv.setText(Html.fromHtml(sb.toString()));
-        /*
-        TextView caseTitle = (TextView)mFloatLayout.findViewById(R.id.case_float_case_title);
-        caseTitle.setText(caseEntryItem.getCaseName());
-        TextView caseInput = (TextView)mFloatLayout.findViewById(R.id.case_float_input);
-        caseInput.setText(caseEntryItem.getCaseInput());
-        TextView caseOutput = (TextView)mFloatLayout.findViewById(R.id.case_float_output);
-        caseOutput.setText(caseEntryItem.getCaseOutput());
-        TextView caseCheck = (TextView)mFloatLayout.findViewById(R.id.case_float_case_check);
-        caseCheck.setText(caseEntryItem.getCaseCheckList());
-        */
+
+        TextView pageTv = (TextView)mFloatLayout.findViewById(R.id.case_page);
+        int index = CaseChosenList.getInstance().getIndex(caseId);
+        int count = CaseChosenList.getInstance().getCount();
+        pageTv.setText(String.format("%d/%d", index, count));
     }
 
     private String wrapContent(String content){
         String result = content.replace("\r\n", "<br>");
         result = result.replace("\n", "<br>");
         return result;
+    }
+
+    private boolean hasRan(){
+        return caseFileName != null;
+    }
+
+    private void setNotRan(){
+        caseFileName = null;
+    }
+
+    private void uploadResult(String filename){
+        File file = new File(filename);
+        RequestParams params = new RequestParams();
+        try {
+            params.put("caseresult", file);
+        } catch (FileNotFoundException e) {
+            Toast.makeText(CaseDetailFloatService.this, "unvalid path"+caseFileName, Toast.LENGTH_SHORT).show();
+        }
+        AmmHttpClient.post("uploadResult.php", params, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                Log.e(TAG, s);
+                Toast.makeText(CaseDetailFloatService.this, s, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onSuccess(int i, Header[] headers, String s) {
+                Log.i(TAG, s);
+                Toast.makeText(CaseDetailFloatService.this, s, Toast.LENGTH_SHORT).show();
+            }
+        }, false);
     }
 }

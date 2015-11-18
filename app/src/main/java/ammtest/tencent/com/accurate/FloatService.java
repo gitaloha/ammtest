@@ -45,6 +45,7 @@ public class FloatService extends Service {
     WindowManager wm;
     TextView ctlText;
     ImageView ctlImg;
+    File resultFile = null;
     private static Handler handler=new Handler();
     float pressedX,pressedY,x,y;
     private boolean hasStart = false;
@@ -177,7 +178,7 @@ public class FloatService extends Service {
                         @Override
                         public void run() {
                             try {
-                                final String response = AccurateClient.getInstance().stopCase();
+                                String response = AccurateClient.getInstance().stopCase();
                                 String [] res = response.split(":");
                                 final String caseFilename;
                                 if(res.length ==2){
@@ -186,33 +187,10 @@ public class FloatService extends Service {
                                     throw new Exception("unvalided return from wechat");
                                 }
                                 final File file = new File("/sdcard/mmtest/accurate", caseFilename);
-                                if(!file.exists()){
-                                    throw  new Exception("no trace file");
+                                if(!file.exists()) {
+                                    throw new Exception("no trace file");
                                 }
-                                handler.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Intent intent = new Intent(FloatService.this, CaseDetailFloatService.class);
-                                        intent.putExtra(Constant.INTENT_CASE_ID, caseId);
-                                        intent.putExtra(Constant.INTENT_CASE_FILENAME, file.getPath());
-                                        startService(intent);
-                                        finish();
-                                    }
-                                });
-                                RequestParams params = new RequestParams();
-                                params.put("caseresult", file);
-                                AmmHttpClient.post("uploadResult.php", params, new TextHttpResponseHandler(){
-                                    @Override
-                                    public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
-                                        Log.e(TAG, s);
-                                    }
-
-                                    @Override
-                                    public void onSuccess(int i, Header[] headers, String s) {
-                                        Log.i(TAG, s);
-
-                                    }
-                                }, true);
+                                resultFile = file;
                             } catch (final Exception e) {
                                 handler.post(new Runnable() {
                                     @Override
@@ -228,6 +206,18 @@ public class FloatService extends Service {
                                 });
                                 e.printStackTrace();
                             }
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Intent intent = new Intent(FloatService.this, CaseDetailFloatService.class);
+                                    intent.putExtra(Constant.INTENT_CASE_ID, caseId);
+                                    if(resultFile!=null){
+                                        intent.putExtra(Constant.INTENT_CASE_FILENAME, resultFile.getPath());
+                                    }
+                                    startService(intent);
+                                    finish();
+                                }
+                            });
                         }
                     }).start();
                 }else{
@@ -238,12 +228,14 @@ public class FloatService extends Service {
                         public void run() {
 
                             try {
-                                AccurateClient.getInstance().startCase(caseEntryItem.getCaseName());
-                            } catch (Exception e) {
+                                AccurateClient.getInstance().startCase(String.valueOf(caseEntryItem.getCaseId()));
+                            } catch (final Exception e) {
                                 handler.post(new Runnable() {
                                     @Override
                                     public void run() {
-                                        Toast.makeText(FloatService.this, R.string.case_start_errmsg, Toast.LENGTH_SHORT).show();
+                                        String errmsg = getResources().getString(R.string.case_stop_errmsg)+e.getMessage();
+                                        Log.e(TAG, errmsg);
+                                        Toast.makeText(FloatService.this, errmsg, Toast.LENGTH_SHORT).show();
                                     }
                                 });
 
@@ -264,6 +256,9 @@ public class FloatService extends Service {
             wm.removeView(mFloatLayout);
         }
         mFloatLayout = null;
+        if(resultFile != null){
+            resultFile = null;
+        }
     }
 
     private  void updateViewPosition(){
