@@ -26,24 +26,49 @@ public class CaseProvider extends ContentProvider {
 
     private static final UriMatcher uriMatcher;
     private static final String DB_NAME = "case";
-    private static final int DB_VERSION = 5;
-    private static final String DB_TABLE = "case_tbl";
+    private static final int DB_VERSION = 8;
+    private static final String DB_CASE_TABLE = AmmtestSQLiteOpenHelper.DATABASE_CASE_TABLE;
+    private static final String DB_EXCUTOR_TABLE = AmmtestSQLiteOpenHelper.DATABASE_EXCUTOR_TABLE;
+
+    /*Authority*/
+    public static final String AUTHORITY = "com.tencent.ammtest.mm.cases";
+
+    /*Content URI*/
+    public static final Uri CONTENT_CASEID_URI = Uri.parse("content://" + AUTHORITY + "/caseids");
+    public static final Uri CONTENT_EXCUTOR_URI = Uri.parse("content://" + AUTHORITY + "/excutor");
+    public static final Uri CONTENT_EXCUTORS_URI = Uri.parse("content://" + AUTHORITY + "/excutors");
+
+    /*Match Code*/
+    public static final int CASE_ALL = 1;
+    public static final int CASE_ID = 2;
+    public static final int CASE_MODULES = 3;
+    public static final int CASE_EXCUTORS = 4;
+    public static final int CASE_EXCUTOR = 5;
 
     static {
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        uriMatcher.addURI(CaseEntryItem.AUTHORITY, "caseids", CaseEntryItem.CASE_ALL);
-        uriMatcher.addURI(CaseEntryItem.AUTHORITY, "caseids/#", CaseEntryItem.CASE_ID);
-        uriMatcher.addURI(CaseEntryItem.AUTHORITY, "casename/#", CaseEntryItem.CASE_NAME);
+        uriMatcher.addURI(AUTHORITY, "caseids", CASE_ALL);
+        uriMatcher.addURI(AUTHORITY, "caseids/#", CASE_ID);
+        uriMatcher.addURI(AUTHORITY, "casemodules/#", CASE_MODULES);
+        uriMatcher.addURI(AUTHORITY, "excutors/*", CASE_EXCUTORS);
+        uriMatcher.addURI(AUTHORITY, "excutor/*/#", CASE_EXCUTOR);
     }
 
-    private static final HashMap<String, String> caseProjectionMap;
+    private static final HashMap<String, String> caseEntryProjectionMap;
     static {
-        caseProjectionMap = new HashMap<String, String>();
-        caseProjectionMap.put(CaseEntryItem.F_ID, CaseEntryItem.F_ID);
-        caseProjectionMap.put(CaseEntryItem.F_CASE_NAME, CaseEntryItem.F_CASE_NAME);
-        caseProjectionMap.put(CaseEntryItem.F_CASE_INPUT, CaseEntryItem.F_CASE_INPUT);
-        caseProjectionMap.put(CaseEntryItem.F_CASE_OUTPUT, CaseEntryItem.F_CASE_OUTPUT);
-        caseProjectionMap.put(CaseEntryItem.F_CASE_CHECK_LIST, CaseEntryItem.F_CASE_CHECK_LIST);
+        caseEntryProjectionMap = new HashMap<String, String>();
+        caseEntryProjectionMap.put(CaseEntryItem.F_ID, CaseEntryItem.F_ID);
+        caseEntryProjectionMap.put(CaseEntryItem.F_CASE_NAME, CaseEntryItem.F_CASE_NAME);
+        caseEntryProjectionMap.put(CaseEntryItem.F_CASE_INPUT, CaseEntryItem.F_CASE_INPUT);
+        caseEntryProjectionMap.put(CaseEntryItem.F_CASE_OUTPUT, CaseEntryItem.F_CASE_OUTPUT);
+        caseEntryProjectionMap.put(CaseEntryItem.F_CASE_MODULE, CaseEntryItem.F_CASE_MODULE);
+        caseEntryProjectionMap.put(CaseEntryItem.F_CASE_CHECK_LIST, CaseEntryItem.F_CASE_CHECK_LIST);
+    }
+
+    private static final HashMap<String, String> caseModuleProjectionMap;
+    static {
+        caseModuleProjectionMap = new HashMap<String, String>();
+        caseModuleProjectionMap.put(CaseEntryItem.F_CASE_MODULE, CaseEntryItem.F_CASE_MODULE);
     }
 
     private AmmtestSQLiteOpenHelper dbHelper = null;
@@ -55,7 +80,7 @@ public class CaseProvider extends ContentProvider {
         resolver = context.getContentResolver();
         dbHelper = new AmmtestSQLiteOpenHelper(context, DB_NAME, null, DB_VERSION);
 
-        Log.i(TAG, "Articles Provider Create");
+        Log.i(TAG, " Provider Create");
 
         return true;
     }
@@ -71,30 +96,42 @@ public class CaseProvider extends ContentProvider {
         String limit = null;
 
         switch (uriMatcher.match(uri)) {
-            case CaseEntryItem.CASE_ALL: {
-                sqlBuilder.setTables(DB_TABLE);
-                sqlBuilder.setProjectionMap(caseProjectionMap);
+            case CASE_ALL: {
+                sqlBuilder.setTables(DB_CASE_TABLE);
                 break;
             }
-            case CaseEntryItem.CASE_ID: {
+            case CASE_ID: {
                 String id = uri.getPathSegments().get(1);
-                sqlBuilder.setTables(DB_TABLE);
-                sqlBuilder.setProjectionMap(caseProjectionMap);
+                sqlBuilder.setTables(DB_CASE_TABLE);
                 sqlBuilder.appendWhere(CaseEntryItem.F_ID + "=" + id);
                 break;
             }
-            case CaseEntryItem.CASE_NAME: {
-                String casename = uri.getPathSegments().get(1);
-                sqlBuilder.setTables(DB_TABLE);
-                sqlBuilder.setProjectionMap(caseProjectionMap);
-                sqlBuilder.appendWhere(CaseEntryItem.F_CASE_NAME + "=" + casename);
+            case CASE_MODULES: {
+                String moduleName = uri.getPathSegments().get(1);
+                sqlBuilder.setTables(DB_CASE_TABLE);
+                sqlBuilder.appendWhere(CaseEntryItem.F_CASE_MODULE + "=" + moduleName);
+                break;
+            }
+            case CASE_EXCUTOR:{
+                String revision = uri.getPathSegments().get(1);
+                String idStr = uri.getPathSegments().get(2);
+                sqlBuilder.setTables(DB_EXCUTOR_TABLE);
+                sqlBuilder.appendWhere(CaseExcutorItem.F_CASE_ID + "=" + idStr);
+                sqlBuilder.appendWhere(" and "+CaseExcutorItem.F_EXCUTE_REVISION+"='"+revision+"'");
+                break;
+            }
+            case CASE_EXCUTORS:{
+                //获取某个版本执行的所有CASE
+                String revision = uri.getPathSegments().get(1);
+                sqlBuilder.setTables(DB_EXCUTOR_TABLE);
+                sqlBuilder.appendWhere(CaseExcutorItem.F_EXCUTE_REVISION+"='"+revision+"'");
                 break;
             }
             default:
                 throw new IllegalArgumentException("Error Uri: " + uri);
         }
 
-        Cursor cursor = sqlBuilder.query(db, projection, selection, selectionArgs, null, null, TextUtils.isEmpty(sortOrder) ? CaseEntryItem.DEFAULT_SORT_ORDER : sortOrder, limit);
+        Cursor cursor = sqlBuilder.query(db, projection, selection, selectionArgs, null, null, TextUtils.isEmpty(sortOrder) ? null : sortOrder, limit);
         cursor.setNotificationUri(resolver, uri);
 
         return cursor;
@@ -105,9 +142,11 @@ public class CaseProvider extends ContentProvider {
     public String getType(Uri uri) {
 
         switch (uriMatcher.match(uri)){
-            case CaseEntryItem.CASE_ALL:
-            case CaseEntryItem.CASE_ID:
-            case CaseEntryItem.CASE_NAME:
+            case CASE_ALL:
+            case CASE_ID:
+            case CASE_MODULES:
+            case CASE_EXCUTOR:
+            case CASE_EXCUTORS:
                 return  CaseEntryItem.CONTENT_TYPE_CASE;
             default:
                 throw  new IllegalArgumentException("Error Uri: " + uri);
@@ -122,19 +161,28 @@ public class CaseProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        if(uriMatcher.match(uri) != CaseEntryItem.CASE_ID) {
+        Uri newUri = null;
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        if (uriMatcher.match(uri) == CASE_EXCUTOR){
+            long id = db.insert(DB_EXCUTOR_TABLE, CaseExcutorItem.F_CASE_ID, values);
+            if(id < 0) {
+                throw new SQLiteException("Unable to insert " + values + " for " + uri);
+            }
+            newUri = ContentUris.withAppendedId(uri, id);
+            resolver.notifyChange(newUri, null);
+        }
+        else if(uriMatcher.match(uri) ==CASE_ID) {
+            long id = db.insert(DB_CASE_TABLE, CaseEntryItem.F_ID, values);
+            if(id < 0) {
+                throw new SQLiteException("Unable to insert " + values + " for " + uri);
+            }
+            newUri = ContentUris.withAppendedId(uri, id);
+            resolver.notifyChange(newUri, null);
+        }
+        else{
             throw new IllegalArgumentException("Error Uri: " + uri);
         }
 
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-
-        long id = db.insert(DB_TABLE, CaseEntryItem.F_ID, values);
-        if(id < 0) {
-            throw new SQLiteException("Unable to insert " + values + " for " + uri);
-        }
-
-        Uri newUri = ContentUris.withAppendedId(uri, id);
-        resolver.notifyChange(newUri, null);
         return newUri;
     }
 
@@ -144,10 +192,18 @@ public class CaseProvider extends ContentProvider {
         int count = 0;
 
         switch(uriMatcher.match(uri)) {
-            case CaseEntryItem.CASE_ID: {
+            case CASE_ID: {
                 String id = uri.getPathSegments().get(1);
-                count = db.delete(DB_TABLE, CaseEntryItem.F_ID + "=" + id
+                count = db.delete(DB_CASE_TABLE, CaseEntryItem.F_ID + "=" + id
                         + (!TextUtils.isEmpty(selection) ? " and (" + selection + ')' : ""), selectionArgs);
+                break;
+            }
+            case CASE_EXCUTOR:{
+                String revisions = uri.getPathSegments().get(1);
+                String id = uri.getPathSegments().get(2);
+                count = db.delete(DB_EXCUTOR_TABLE, CaseExcutorItem.F_CASE_ID +"="+id+
+                " and "+CaseExcutorItem.F_EXCUTE_REVISION+"="+revisions+
+                        (!TextUtils.isEmpty(selection) ? " and (" + selection + ')' : ""), selectionArgs);
                 break;
             }
             default:
@@ -165,10 +221,18 @@ public class CaseProvider extends ContentProvider {
         int count = 0;
 
         switch(uriMatcher.match(uri)) {
-            case CaseEntryItem.CASE_ID: {
+            case CASE_ID: {
                 String id = uri.getPathSegments().get(1);
-                count = db.update(DB_TABLE, values, CaseEntryItem.F_ID + "=" + id
+                count = db.update(DB_CASE_TABLE, values, CaseEntryItem.F_ID + "=" + id
                         + (!TextUtils.isEmpty(selection) ? " and (" + selection + ')' : ""), selectionArgs);
+                break;
+            }
+            case CASE_EXCUTOR:{
+                String revisions = uri.getPathSegments().get(1);
+                String id = uri.getPathSegments().get(2);
+                count = db.update(DB_EXCUTOR_TABLE, values, CaseExcutorItem.F_CASE_ID + "=" + id +
+                        " and " + CaseExcutorItem.F_EXCUTE_REVISION + "='" + revisions +"'"+
+                        (!TextUtils.isEmpty(selection) ? " and (" + selection + ')' : ""), selectionArgs);
                 break;
             }
             default:

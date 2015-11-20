@@ -147,7 +147,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="New Text"
+            android:text="0/0"
             android:id="@+id/case_page"
             android:layout_gravity="right"
             android:layout_marginRight="10dp" />

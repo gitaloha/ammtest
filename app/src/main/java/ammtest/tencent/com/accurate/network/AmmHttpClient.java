@@ -14,6 +14,8 @@ public class AmmHttpClient {
     private static AsyncHttpClient asyncClient = new AsyncHttpClient();
     private static SyncHttpClient syncClient = new SyncHttpClient();
 
+
+
     public static void get(String url, RequestParams params, AsyncHttpResponseHandler responseHandler, boolean isSync) {
         if(isSync){
             syncClient.get(getAbsoluteUrl(url), params, responseHandler);

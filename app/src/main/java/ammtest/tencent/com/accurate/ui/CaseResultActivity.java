@@ -1,12 +1,12 @@
-package ammtest.tencent.com.accurate;
+package ammtest.tencent.com.accurate.ui;
 
 import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.app.Activity;
 import android.os.Handler;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import ammtest.tencent.com.accurate.R;
 import ammtest.tencent.com.accurate.model.CaseEntryItem;
 
 public class CaseResultActivity extends BaseActivity {
@@ -60,10 +61,7 @@ public class CaseResultActivity extends BaseActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.home) {
-            Intent intent = new Intent(CaseResultActivity.this, CaseDetailFloatService.class);
-            intent.putExtra(Constant.INTENT_CASE_ID, caseId);
-            startService(intent);
-            finish();
+            back();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -151,6 +149,21 @@ public class CaseResultActivity extends BaseActivity {
             }
         }.start();
 
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(keyCode == KeyEvent.KEYCODE_BACK){
+            back();
+            return false;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+    private void back(){
+        Intent intent = new Intent(CaseResultActivity.this, CaseDetailFloatService.class);
+        intent.putExtra(Constant.INTENT_CASE_ID, caseId);
+        startService(intent);
+        finish();
     }
 
     static public class CaseResultItem{

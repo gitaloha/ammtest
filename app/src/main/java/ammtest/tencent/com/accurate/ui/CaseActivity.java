@@ -1,4 +1,4 @@
-package ammtest.tencent.com.accurate;
+package ammtest.tencent.com.accurate.ui;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import ammtest.tencent.com.accurate.R;
 import ammtest.tencent.com.accurate.model.CaseEntryItem;
 import ammtest.tencent.com.accurate.model.CaseModel;
 

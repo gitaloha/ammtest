@@ -1,27 +1,26 @@
-package ammtest.tencent.com.accurate;
+package ammtest.tencent.com.accurate.ui;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Window;
-import android.widget.Toast;
+
+import ammtest.tencent.com.accurate.R;
 
 
-public class BaseActivity extends Activity {
+public class TestPlanActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
+        setContentView(R.layout.activity_test_plan);
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.man, menu);
+        getMenuInflater().inflate(R.menu.test_plan, menu);
         return true;
     }
 
@@ -32,12 +31,7 @@ public class BaseActivity extends Activity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
-            Intent intent = new Intent(this, SettingsActivity.class);
-            startActivity(intent);
             return true;
-        }else if(id == R.id.action_new_case){
-            Intent intent = new Intent(this, CaseActivity.class);
-            startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
     }

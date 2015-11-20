@@ -1,22 +1,21 @@
-package ammtest.tencent.com.accurate;
+package ammtest.tencent.com.accurate.ui;
 
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.os.IBinder;
 import android.text.Html;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Display;
+import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,16 +23,13 @@ import android.widget.Toast;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 
-import org.w3c.dom.Text;
-
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 
+import ammtest.tencent.com.accurate.R;
 import ammtest.tencent.com.accurate.model.CaseChosenList;
 import ammtest.tencent.com.accurate.model.CaseEntryItem;
 import ammtest.tencent.com.accurate.model.CaseModel;
-import ammtest.tencent.com.accurate.network.AccurateClient;
 import ammtest.tencent.com.accurate.network.AmmHttpClient;
 import cz.msebera.android.httpclient.Header;
 
@@ -44,16 +40,37 @@ public class CaseDetailFloatService extends Service {
     private String TAG = "ammtest.CaseDetailFloatService";
     private String caseFileName = null;
     int caseId;
+    private GestureDetector gestureDetector;
+    CaseChosenList caseList ;
+    private GestureDetector.OnGestureListener onGestureListener =
+            new GestureDetector.SimpleOnGestureListener() {
+                @Override
+                public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
+                                       float velocityY) {
+                    float x = e2.getX() - e1.getX();
+                    float y = e2.getY() - e1.getY();
 
+                    if (x > 120) {
+                        CaseEntryItem caseEntry = caseList.getLastCase(caseId);
+                        changeToCase(caseEntry);
+                    } else if (x < -120) {
+                        CaseEntryItem caseEntry = caseList.getNextCase(caseId);
+                        changeToCase(caseEntry);
+
+                    }
+                    return true;
+                }
+            };
     public CaseDetailFloatService() {
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        caseList = CaseChosenList.getInstance();
         caseId = intent.getIntExtra(Constant.INTENT_CASE_ID, 0);
         caseFileName = intent.getStringExtra(Constant.INTENT_CASE_FILENAME);
+        gestureDetector = new GestureDetector(CaseDetailFloatService.this,onGestureListener);
         creatFloatView();
-
         return START_NOT_STICKY;
     }
 
@@ -70,7 +87,6 @@ public class CaseDetailFloatService extends Service {
         if(mFloatLayout != null){
             wm.removeView(mFloatLayout);
         }
-        mFloatLayout = null;
     }
 
     @Override
@@ -115,11 +131,12 @@ public class CaseDetailFloatService extends Service {
         stopBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                finish();
                 Intent intent = new Intent(CaseDetailFloatService.this, MainActivity.class);
                 intent.putExtra(Constant.INTENT_CASE_REFRESH, false);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
-                finish();
+
             }
         });
 
@@ -144,7 +161,8 @@ public class CaseDetailFloatService extends Service {
         skipBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                changeToNextCase();
+                CaseEntryItem caseEntry = caseList.getNextCase(caseId);
+                changeToCase(caseEntry);
             }
         });
 
@@ -159,8 +177,9 @@ public class CaseDetailFloatService extends Service {
                     startBtn.setText(R.string.case_float_start);
                 }
                 if(hasRan()){
-                    uploadResult(caseFileName);
-                    changeToNextCase();
+                    uploadResult(caseFileName, false);
+                    CaseEntryItem caseEntry = caseList.getNextCase(caseId);
+                    changeToCase(caseEntry);
                 }else{
                     Intent intent = new Intent(CaseDetailFloatService.this, FloatService.class);
                     intent.putExtra(Constant.INTENT_CASE_ID, caseId);
@@ -170,19 +189,24 @@ public class CaseDetailFloatService extends Service {
 
             }
         });
-
+        TextView caseTv = (TextView)mFloatLayout.findViewById(R.id.case_defail_tv);
+        caseTv.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return gestureDetector.onTouchEvent(event);
+            }
+        });
         renderContent(caseEntryItem);
     }
 
-    private void changeToNextCase(){
-        CaseChosenList caseList = CaseChosenList.getInstance();
-        CaseEntryItem caseEntry = caseList.getNextCase(caseId);
+    private void changeToCase(CaseEntryItem caseEntry){
         if (caseEntry == null){
             //no next
             finish();
-            Intent intent = new Intent(CaseDetailFloatService.this, CaseResultActivity.class);
+            Intent intent = new Intent(CaseDetailFloatService.this, MainActivity.class);
             intent.putExtra(Constant.INTENT_CASE_FILENAME, caseFileName);
             intent.putExtra(Constant.INTENT_CASE_ID, caseId);
+            intent.putExtra(Constant.INTENT_CASE_REFRESH, false);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
             return;
@@ -198,11 +222,16 @@ public class CaseDetailFloatService extends Service {
             return;
         }
         Button startBtn = (Button)mFloatLayout.findViewById(R.id.case_float_start_btn);
+        Button checkBtn = (Button)mFloatLayout.findViewById(R.id.case_check_btn);
         if(hasRan()){
             startBtn.setText(R.string.case_float_pass);
+            checkBtn.setEnabled(true);
         }else{
             startBtn.setText(R.string.case_float_start);
+            checkBtn.setEnabled(false);
         }
+
+
         TextView caseTv = (TextView)mFloatLayout.findViewById(R.id.case_defail_tv);
         StringBuilder sb = new StringBuilder();
         sb.append("<html><body>");
@@ -254,7 +283,7 @@ public class CaseDetailFloatService extends Service {
         caseFileName = null;
     }
 
-    private void uploadResult(String filename){
+    private void uploadResult(String filename, boolean isSync){
         File file = new File(filename);
         RequestParams params = new RequestParams();
         try {
@@ -274,6 +303,6 @@ public class CaseDetailFloatService extends Service {
                 Log.i(TAG, s);
                 Toast.makeText(CaseDetailFloatService.this, s, Toast.LENGTH_SHORT).show();
             }
-        }, false);
+        }, isSync);
     }
 }

@@ -51,4 +51,21 @@ public class CaseChosenList {
         }
         return null;
     }
+
+    public CaseEntryItem getLastCase(int caseId){
+        CaseEntryItem result = null;
+        boolean hasFind = false;
+        for(CaseEntryItem caseEntryItem: casesEntries){
+            if(caseEntryItem.getCaseId() == caseId){
+                hasFind = true;
+                break;
+            }
+            result = caseEntryItem;
+        }
+        if(hasFind){
+            return  result;
+        }else {
+            return null;
+        }
+    }
 }

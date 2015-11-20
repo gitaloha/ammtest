@@ -1,4 +1,4 @@
-package ammtest.tencent.com.accurate;
+package ammtest.tencent.com.accurate.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import ammtest.tencent.com.accurate.R;
 import ammtest.tencent.com.accurate.model.CaseEntryItem;
 
 /**
@@ -39,6 +40,9 @@ public class MainArrayAdapter extends ArrayAdapter<CaseEntryItem> {
 
         TextView caseNameView = (TextView)caseLy.findViewById(R.id.case_item_name);
         caseNameView.setText(item.getCaseName());
+
+        TextView caseIdView = (TextView)caseLy.findViewById(R.id.case_item_id);
+        caseIdView.setText(String.valueOf(item.getCaseId()));
         //TextView inputTv = (TextView)caseLy.findViewById(R.id.main_case_input);
         //inputTv.setText(item.getCaseInput());
         return (LinearLayout)caseLy;

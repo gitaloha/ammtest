@@ -16,11 +16,16 @@ public class AccurateClient {
 
     static final String CMD_CASE_START = "case_start";
     static final String CMD_CASE_STOP = "case_stop";
+    static final String CMD_GET_REVISION = "get_revision";
     static final String CMD_CASE_NAME = "case_name";
 
     static final String CMD_RESPONSE_OK = "parse_cmd_ok";
     static final String CMD_RESPONSE_FAIL = "parse_cmd_fail";
     private static final String TAG = "ammtest.AccurateClient";
+
+
+
+    public static String revision = null;
 
     String host = "127.0.0.1";
     int port = 7000;
@@ -48,13 +53,21 @@ public class AccurateClient {
         response =  br.readLine().trim();
         System.out.println("response:"+response);
         client.close();
+        String [] res = response.split(":");
+        final String caseFilename;
+        if(res.length == 2){
+            if(res[0].equals(CMD_RESPONSE_OK)){
+                response = res[1].trim();
+            }
+        }
         return response;
     }
 
     public String startCase(String caseName) throws IOException {
         String response = null;
         response = sendCmd(String.format("%s:%s", CMD_CASE_START, caseName));
-        Log.i(TAG, "startCase response:"+response);
+        Log.i(TAG, "startCase response:" + response);
+        getRevision();
         return response;
     }
 
@@ -63,5 +76,17 @@ public class AccurateClient {
         response = sendCmd(String.format("%s:", CMD_CASE_STOP));
         Log.i(TAG, "stopCase response:" + response);
         return response;
+    }
+
+    public String getRevision() {
+        if(null != revision){
+            return revision;
+        }
+        try {
+            revision = sendCmd(String.format("%s:", CMD_GET_REVISION));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return revision;
     }
 }

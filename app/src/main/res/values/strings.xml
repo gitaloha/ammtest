@@ -44,7 +44,7 @@
     <string name="back">返回</string>
 
     <string name="action_setting">设置</string>
-    <string name="action_new_case">设置</string>
+    <string name="action_action_refresh">刷新</string>
 
     <string name="provider_label">caseProvider</string>
 
