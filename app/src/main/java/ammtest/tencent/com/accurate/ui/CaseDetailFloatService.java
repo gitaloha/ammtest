@@ -157,12 +157,23 @@ public class CaseDetailFloatService extends Service {
             }
         });
 
-        Button skipBtn = (Button)mFloatLayout.findViewById(R.id.case_float_skip_btn);
-        skipBtn.setOnClickListener(new View.OnClickListener() {
+        Button failedBtn = (Button)mFloatLayout.findViewById(R.id.case_float_failed_btn);
+        failedBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CaseEntryItem caseEntry = caseList.getNextCase(caseId);
-                changeToCase(caseEntry);
+                if(caseFileName != null){
+                    File file = new File(caseFileName);
+                    boolean result = file.delete();
+                    if(result){
+                        Toast.makeText(CaseDetailFloatService.this, "delete "+caseFileName+" successfully", Toast.LENGTH_SHORT).show();
+                    }else{
+                        Toast.makeText(CaseDetailFloatService.this, "can not delete "+caseFileName, Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else{
+                    Toast.makeText(CaseDetailFloatService.this, "caseFileName is null ", Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
 

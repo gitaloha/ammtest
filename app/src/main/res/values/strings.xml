@@ -36,6 +36,7 @@
     <string name="case_float_start">开始</string>
     <string name="case_float_pass">通过</string>
     <string name="case_float_skip">跳过</string>
+    <string name="case_float_failed">失败</string>
     <string name="case_float_stop">关闭</string>
     <string name="case_float_input">输入：</string>
     <string name="case_float_output">输出：</string>

@@ -184,6 +184,7 @@ public class FloatService extends Service {
                         if (pressTime-lastPressTime<500){
                             Intent intent = new Intent(FloatService.this, CaseDetailFloatService.class);
                             intent.putExtra(Constant.INTENT_CASE_ID, caseId);
+                            intent.putExtra(Constant.INTENT_CASE_FILENAME, resultFile);
                             startService(intent);
                             finish();
                             lastPressTime = 0;

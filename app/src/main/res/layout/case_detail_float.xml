@@ -183,8 +183,8 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/case_float_skip"
-                android:id="@+id/case_float_skip_btn" />
+                android:text="@string/case_float_failed"
+                android:id="@+id/case_float_failed_btn" />
 
             <Button
                 android:layout_width="wrap_content"
