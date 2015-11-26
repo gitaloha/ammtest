@@ -41,21 +41,45 @@
             android:background="#969696"
             android:paddingTop="5dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="a"
-                android:id="@+id/float_case_title"
-                android:ellipsize="end"
-                android:singleLine="true" />
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="New TextasdkfgalsidufhaishdfpoadNew TextasdkfgalsidufhaishdfpoadNew TextasdkfgalsidufhaishdfpoadNew Textasdkfgalsidufhaishdfpoad"
-                android:id="@+id/float_first_input"
-                android:layout_gravity="bottom"
-                android:layout_weight="1" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="55555"
+                    android:id="@+id/case_id_tv"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginRight="2dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="titletile"
+                    android:id="@+id/float_case_title"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:textSize="15dp"
+                    android:textIsSelectable="true"
+                    android:textColor="#fbf7f7" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="New TextasdkfgalsidufhaishdfpoadNew TextasdkfgalsidufhaishdfpoadNew TextasdkfgalsidufhaishdfpoadNew Textasdkfgalsidufhaishdfpoad"
+                    android:id="@+id/float_first_input"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="1" />
+            </LinearLayout>
 
         </LinearLayout>
 

@@ -3,6 +3,7 @@ package ammtest.tencent.com.accurate.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -14,6 +15,7 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.util.List;
 
 import ammtest.tencent.com.accurate.R;
@@ -26,11 +28,11 @@ import ammtest.tencent.com.accurate.model.CaseModel;
 import ammtest.tencent.com.accurate.network.AmmHttpClient;
 
 
-public class MainActivity extends BaseActivity {
+public class ModuleCasesActivity extends BaseActivity {
 
     private MainArrayAdapter caseEntryAA;
     private List<CaseEntryItem> caseItems;
-    private String TAG = "ammtest.MainActivity";
+    private String TAG = "ammtest.ModuleCasesActivity";
     private CaseModel mModel;
     protected CaseExecutorModel mExcutorModel;
 
@@ -38,10 +40,14 @@ public class MainActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Intent intent = getIntent();
+        String moduleName = intent.getStringExtra(Constant.INTENT_MODULE_NAME);
+
         mModel = new CaseModel(getApplicationContext());
         mExcutorModel = new CaseExecutorModel(getApplicationContext());
 
-        caseItems = mModel.getAllCaseItems();
+        //caseItems = mModel.getAllCaseItems();
+        caseItems = mModel.getCaseItemsByModuleName(moduleName);
         CaseChosenList.getInstance().bindData(caseItems);
         caseEntryAA = new MainArrayAdapter(this, R.layout.case_item, caseItems);
         ListView lsView = (ListView)findViewById(R.id.main_case_ls);
@@ -50,11 +56,11 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.i(TAG, "onclick" + position);
-                Intent intent = new Intent(MainActivity.this, FloatService.class);
+                Intent intent = new Intent(ModuleCasesActivity.this, FloatService.class);
                 intent.putExtra(Constant.INTENT_CASE_ID, caseItems.get(position).getCaseId());
                 startService(intent);
                 finish();
-                //Toast.makeText(MainActivity.this, caseItems.get(position).getCaseName(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(ModuleCasesActivity.this, caseItems.get(position).getCaseName(), Toast.LENGTH_SHORT).show();
             }
         });
         boolean refresh = getIntent().getBooleanExtra(Constant.INTENT_CASE_REFRESH, false);
@@ -81,8 +87,8 @@ public class MainActivity extends BaseActivity {
                 List<CaseExcutorItem> results = mExcutorModel.getExcutorsItemsByRevision("norevision");
                 Log.i(TAG, results.toString());
 
-                List<String> modules = mModel.getCaseModules();
-                Log.i(TAG, modules.toString());
+                //ArrayList<String> modules = mModel.getCaseModules();
+                //Log.i(TAG, modules.toString());
             }
         }).start();
     }
@@ -99,6 +105,20 @@ public class MainActivity extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(keyCode == KeyEvent.KEYCODE_BACK){
+            back();
+            return false;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    private void back(){
+        Intent intent = new Intent(ModuleCasesActivity.this, LaunchActivity.class);
+        startActivity(intent);
+        finish();
+    }
 
     private void updateCase(){
         AmmHttpClient.get("getcases.php", null, new JsonHttpResponseHandler(){

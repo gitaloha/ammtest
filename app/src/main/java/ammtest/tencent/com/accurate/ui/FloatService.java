@@ -22,10 +22,9 @@ import android.widget.Toast;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 
-import org.w3c.dom.Text;
-
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.Field;
 
 import ammtest.tencent.com.accurate.R;
@@ -37,6 +36,8 @@ import ammtest.tencent.com.accurate.model.CaseModel;
 import ammtest.tencent.com.accurate.model.Config;
 import ammtest.tencent.com.accurate.network.AccurateClient;
 import ammtest.tencent.com.accurate.network.AmmHttpClient;
+import ammtest.tencent.com.accurate.util.FileUtil;
+import ammtest.tencent.com.accurate.util.StringUtil;
 import cz.msebera.android.httpclient.Header;
 
 public class FloatService extends Service {
@@ -47,7 +48,7 @@ public class FloatService extends Service {
     WindowManager.LayoutParams wmParams;
     WindowManager wm;
 
-    File resultFile = null;
+    String resultFileName= null;
     int lastCaseId = -1;
     CaseModel mCaseModel;
     CaseChosenList mCaseChosenList;
@@ -89,9 +90,6 @@ public class FloatService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if(mFloatLayout != null){
-            wm.removeView(mFloatLayout);
-        }
     }
 
 
@@ -141,12 +139,13 @@ public class FloatService extends Service {
         firstInputTv = (TextView)mFloatLayout.findViewById(R.id.float_first_input);
         titleTv = (TextView)mFloatLayout.findViewById(R.id.float_case_title);
         textLy = (LinearLayout)mFloatLayout.findViewById(R.id.float_text_ly);
+
         RelativeLayout retLy = (RelativeLayout)mFloatLayout.findViewById(R.id.float_relatvie);
 
         uiRenderByCase(mCaseModel.getCaseItem(caseId));
         wmParams.height = WindowManager.LayoutParams.WRAP_CONTENT ;
-        wmParams.width = (int) (rect.width());
-        wmParams.x = 0;
+        wmParams.width = (int) (rect.width()*0.8);
+        wmParams.x = (int)(rect.width()*0.1);
         wmParams.y = rect.height()/4;
 
         wm.addView(mFloatLayout, wmParams);
@@ -168,11 +167,10 @@ public class FloatService extends Service {
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
+
                 final int action = event.getAction();
                 switch (action) {
                     case MotionEvent.ACTION_DOWN:
-
-
                         initialX = paramsF.x;
                         initialY = paramsF.y;
                         initialTouchX = event.getRawX();
@@ -180,11 +178,15 @@ public class FloatService extends Service {
 
                         //for double kill
                         // Get current time in nano seconds.
+                        if(hasStart){
+                            break;
+                        }
                         long pressTime = System.currentTimeMillis();
                         if (pressTime-lastPressTime<500){
+
                             Intent intent = new Intent(FloatService.this, CaseDetailFloatService.class);
                             intent.putExtra(Constant.INTENT_CASE_ID, caseId);
-                            intent.putExtra(Constant.INTENT_CASE_FILENAME, resultFile);
+                            intent.putExtra(Constant.INTENT_CASE_FILENAME, resultFileName);
                             startService(intent);
                             finish();
                             lastPressTime = 0;
@@ -224,7 +226,7 @@ public class FloatService extends Service {
                                     throw new Exception("no trace file");
                                 }
                                 lastCaseId = caseId;
-                                resultFile = file;
+                                resultFileName = file.getPath();
                             } catch (final Exception e) {
                                 handler.post(new Runnable() {
                                     @Override
@@ -256,8 +258,8 @@ public class FloatService extends Service {
                     }).start();
                     hasStart = !hasStart;
                 }else{
-                    if(lastCaseId > 0 && resultFile != null){
-                        setCaseSuccess(lastCaseId, resultFile.getPath());
+                    if(lastCaseId > 0 && resultFileName != null){
+                        setCaseSuccess(lastCaseId, resultFileName);
                     }
                     new Thread(new Runnable(){
                         @Override
@@ -281,7 +283,7 @@ public class FloatService extends Service {
                                         }, Config.CASE_FLOAT_TOTAL_INPUT_LAST);
                                     }
                                 });
-                            } catch (final Exception e) {
+                            } catch (final IOException e) {
                                 handler.post(new Runnable() {
                                     @Override
                                     public void run() {
@@ -306,14 +308,17 @@ public class FloatService extends Service {
         if (caseEntryItem == null){
             //no next, back to module case list
             finish();
-            Intent intent = new Intent(FloatService.this, MainActivity.class);
+            Intent intent = new Intent(FloatService.this, ModuleCasesActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
             return;
         }
+
         caseId = caseEntryItem.getCaseId();
         titleTv.setText(caseEntryItem.getCaseName());
         String input = caseEntryItem.getCaseInput();
+        TextView caseIdTv = (TextView)mFloatLayout.findViewById(R.id.case_id_tv);
+        caseIdTv.setText(StringUtil.caseIdToStr(caseEntryItem.getCaseId()));
         firstInputTv.setSingleLine(false);
         firstInputTv.setText(input);
 
@@ -323,9 +328,8 @@ public class FloatService extends Service {
         if(mFloatLayout != null){
             wm.removeView(mFloatLayout);
         }
-        mFloatLayout = null;
-        if(resultFile != null){
-            resultFile = null;
+        if(resultFileName != null){
+            resultFileName = null;
         }
         stopSelf();
     }
@@ -355,13 +359,12 @@ public class FloatService extends Service {
 
     private  void setCaseSuccess(int caseId, String filename){
         CaseExcutorItem excutorItem = new CaseExcutorItem();
-        excutorItem.setCaseId(caseId);
         excutorItem.setExcuteStatus(CaseExcutorItem.EXCUTE_STATUS_SUCCESS);
         mExcutirModel.insert(excutorItem);
         uploadResult(filename, false);
     }
 
-    private void uploadResult(String filename, boolean isSync){
+    private void uploadResult(final String filename, boolean isSync){
         File file = new File(filename);
         RequestParams params = new RequestParams();
         try {
@@ -372,7 +375,8 @@ public class FloatService extends Service {
         AmmHttpClient.post("uploadResult.php", params, new TextHttpResponseHandler() {
             @Override
             public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
-                Log.e(TAG, s);
+                Log.e(TAG, "failed:" + s);
+                FileUtil.deleteFile(filename);
                 Toast.makeText(FloatService.this, s, Toast.LENGTH_SHORT).show();
             }
 

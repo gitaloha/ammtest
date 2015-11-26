@@ -31,6 +31,8 @@ import ammtest.tencent.com.accurate.model.CaseChosenList;
 import ammtest.tencent.com.accurate.model.CaseEntryItem;
 import ammtest.tencent.com.accurate.model.CaseModel;
 import ammtest.tencent.com.accurate.network.AmmHttpClient;
+import ammtest.tencent.com.accurate.util.FileUtil;
+import ammtest.tencent.com.accurate.util.StringUtil;
 import cz.msebera.android.httpclient.Header;
 
 public class CaseDetailFloatService extends Service {
@@ -77,16 +79,13 @@ public class CaseDetailFloatService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if(mFloatLayout != null){
-            wm.removeView(mFloatLayout);
-        }
-        mFloatLayout = null;
     }
 
     private void finish(){
         if(mFloatLayout != null){
             wm.removeView(mFloatLayout);
         }
+        stopSelf();
     }
 
     @Override
@@ -132,7 +131,7 @@ public class CaseDetailFloatService extends Service {
             @Override
             public void onClick(View v) {
                 finish();
-                Intent intent = new Intent(CaseDetailFloatService.this, MainActivity.class);
+                Intent intent = new Intent(CaseDetailFloatService.this, LaunchActivity.class);
                 intent.putExtra(Constant.INTENT_CASE_REFRESH, false);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
@@ -161,19 +160,12 @@ public class CaseDetailFloatService extends Service {
         failedBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(caseFileName != null){
-                    File file = new File(caseFileName);
-                    boolean result = file.delete();
-                    if(result){
-                        Toast.makeText(CaseDetailFloatService.this, "delete "+caseFileName+" successfully", Toast.LENGTH_SHORT).show();
-                    }else{
-                        Toast.makeText(CaseDetailFloatService.this, "can not delete "+caseFileName, Toast.LENGTH_SHORT).show();
-                    }
-                }
-                else{
-                    Toast.makeText(CaseDetailFloatService.this, "caseFileName is null ", Toast.LENGTH_SHORT).show();
-                }
-
+                FileUtil.deleteFile(caseFileName);
+                Intent intent = new Intent(CaseDetailFloatService.this, FloatService.class);
+                intent.putExtra(Constant.INTENT_CASE_ID, caseId);
+                //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startService(intent);
+                finish();
             }
         });
 
@@ -182,11 +174,13 @@ public class CaseDetailFloatService extends Service {
         startBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                /*
                 if(hasRan()){
                     startBtn.setText(R.string.case_float_pass);
                 }else{
                     startBtn.setText(R.string.case_float_start);
                 }
+
                 if(hasRan()){
                     uploadResult(caseFileName, false);
                     CaseEntryItem caseEntry = caseList.getNextCase(caseId);
@@ -196,8 +190,12 @@ public class CaseDetailFloatService extends Service {
                     intent.putExtra(Constant.INTENT_CASE_ID, caseId);
                     startService(intent);
                     finish();
-                }
-
+                }*/
+                Intent intent = new Intent(CaseDetailFloatService.this, FloatService.class);
+                intent.putExtra(Constant.INTENT_CASE_ID, caseId);
+                //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startService(intent);
+                finish();
             }
         });
         TextView caseTv = (TextView)mFloatLayout.findViewById(R.id.case_defail_tv);
@@ -214,7 +212,7 @@ public class CaseDetailFloatService extends Service {
         if (caseEntry == null){
             //no next
             finish();
-            Intent intent = new Intent(CaseDetailFloatService.this, MainActivity.class);
+            Intent intent = new Intent(CaseDetailFloatService.this, ModuleCasesActivity.class);
             intent.putExtra(Constant.INTENT_CASE_FILENAME, caseFileName);
             intent.putExtra(Constant.INTENT_CASE_ID, caseId);
             intent.putExtra(Constant.INTENT_CASE_REFRESH, false);
@@ -234,19 +232,22 @@ public class CaseDetailFloatService extends Service {
         }
         Button startBtn = (Button)mFloatLayout.findViewById(R.id.case_float_start_btn);
         Button checkBtn = (Button)mFloatLayout.findViewById(R.id.case_check_btn);
+        Button failedBtn = (Button)mFloatLayout.findViewById(R.id.case_float_failed_btn);
         if(hasRan()){
-            startBtn.setText(R.string.case_float_pass);
+            startBtn.setText(R.string.case_float_goon);
             checkBtn.setEnabled(true);
+            failedBtn.setEnabled(true);
         }else{
-            startBtn.setText(R.string.case_float_start);
+            startBtn.setText(R.string.case_float_goon);
             checkBtn.setEnabled(false);
+            failedBtn.setEnabled(false);
         }
 
 
         TextView caseTv = (TextView)mFloatLayout.findViewById(R.id.case_defail_tv);
         StringBuilder sb = new StringBuilder();
         sb.append("<html><body>");
-        sb.append("<h2>"+caseEntryItem.getCaseName()+"</h2>");
+        sb.append("<h2>Id: "+StringUtil.caseIdToStr(caseId)+caseEntryItem.getCaseName()+"</h2>");
 
 
         if(null != caseEntryItem.getCaseModule()){
@@ -278,6 +279,9 @@ public class CaseDetailFloatService extends Service {
         int index = CaseChosenList.getInstance().getIndex(caseId);
         int count = CaseChosenList.getInstance().getCount();
         pageTv.setText(String.format("%d/%d", index, count));
+
+        //TextView caseIdTv = (TextView)mFloatLayout.findViewById(R.id.case_id_tv);
+        //caseIdTv.setText(StringUtil.caseIdToStr(caseId));
     }
 
     private String wrapContent(String content){

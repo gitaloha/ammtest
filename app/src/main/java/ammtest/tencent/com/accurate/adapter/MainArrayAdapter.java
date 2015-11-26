@@ -12,15 +12,22 @@ import java.util.List;
 
 import ammtest.tencent.com.accurate.R;
 import ammtest.tencent.com.accurate.model.CaseEntryItem;
+import ammtest.tencent.com.accurate.model.CaseExecutorModel;
+import ammtest.tencent.com.accurate.network.AccurateClient;
+import ammtest.tencent.com.accurate.util.StringUtil;
 
 /**
  * Created by eureka on 10/27/15.
  */
 public class MainArrayAdapter extends ArrayAdapter<CaseEntryItem> {
     int _resource;
+    Context context;
+    CaseExecutorModel caseModule;
 
     public MainArrayAdapter(Context context, int resource, List<CaseEntryItem> objects) {
         super(context, resource, objects);
+        this.context = context;
+        caseModule = new CaseExecutorModel(context);
         _resource = resource;
     }
 
@@ -38,11 +45,13 @@ public class MainArrayAdapter extends ArrayAdapter<CaseEntryItem> {
 
         CaseEntryItem item = getItem(position);
 
+
         TextView caseNameView = (TextView)caseLy.findViewById(R.id.case_item_name);
         caseNameView.setText(item.getCaseName());
 
         TextView caseIdView = (TextView)caseLy.findViewById(R.id.case_item_id);
-        caseIdView.setText(String.valueOf(item.getCaseId()));
+        caseIdView.setText(StringUtil.caseIdToStr(item.getCaseId()));
+        caseModule.getExcutorItem(item.getCaseId(), AccurateClient.revision);
         //TextView inputTv = (TextView)caseLy.findViewById(R.id.main_case_input);
         //inputTv.setText(item.getCaseInput());
         return (LinearLayout)caseLy;

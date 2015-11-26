@@ -61,11 +61,26 @@
         android:layout_weight="1"
         android:layout_marginTop="5dp">
 
-        <TextView
-            android:layout_width="fill_parent"
-            android:text="asdadsada"
-            android:layout_height="wrap_content"
-            android:id="@+id/case_defail_tv"/>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <!--
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="New Text"
+                android:id="@+id/case_id_tv"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp" />
+                -->
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:text="asdadsada"
+                android:layout_height="wrap_content"
+                android:id="@+id/case_defail_tv"/>
+        </LinearLayout>
 
         <!--
         <TextView

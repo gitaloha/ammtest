@@ -41,6 +41,7 @@ public class CaseResultActivity extends BaseActivity {
     private Handler handler = new Handler();
     private ArrayList<CaseResultItem> caseResults;
     private CaseResultAdapter adapter;
+    private String caseFilename = null;
 
 
     public static class MethodItem{
@@ -77,7 +78,7 @@ public class CaseResultActivity extends BaseActivity {
         setContentView(R.layout.activity_case_result);
         Intent intent = getIntent();
         caseId = intent.getIntExtra(Constant.INTENT_CASE_ID, 0);
-        final String caseFilename = intent.getStringExtra(Constant.INTENT_CASE_FILENAME);
+        caseFilename = intent.getStringExtra(Constant.INTENT_CASE_FILENAME);
         caseResults = new ArrayList<CaseResultItem>();
         adapter = new CaseResultAdapter(CaseResultActivity.this, R.layout.case_result, caseResults);
         ListView lsView = (ListView)findViewById(R.id.case_result_list);
@@ -162,6 +163,7 @@ public class CaseResultActivity extends BaseActivity {
     private void back(){
         Intent intent = new Intent(CaseResultActivity.this, CaseDetailFloatService.class);
         intent.putExtra(Constant.INTENT_CASE_ID, caseId);
+        intent.putExtra(Constant.INTENT_CASE_FILENAME, caseFilename);
         startService(intent);
         finish();
     }

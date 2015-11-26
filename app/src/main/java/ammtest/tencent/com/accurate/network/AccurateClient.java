@@ -78,12 +78,22 @@ public class AccurateClient {
         return response;
     }
 
+    public void init(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                getRevision();
+            }
+        }).start();
+    }
+
     public String getRevision() {
         if(null != revision){
             return revision;
         }
         try {
             revision = sendCmd(String.format("%s:", CMD_GET_REVISION));
+            Log.i(TAG, "revision......"+revision);
         } catch (IOException e) {
             e.printStackTrace();
         }

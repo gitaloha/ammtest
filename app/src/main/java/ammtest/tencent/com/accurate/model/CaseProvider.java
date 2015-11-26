@@ -26,7 +26,7 @@ public class CaseProvider extends ContentProvider {
 
     private static final UriMatcher uriMatcher;
     private static final String DB_NAME = "case";
-    private static final int DB_VERSION = 8;
+    private static final int DB_VERSION = 9;
     private static final String DB_CASE_TABLE = AmmtestSQLiteOpenHelper.DATABASE_CASE_TABLE;
     private static final String DB_EXCUTOR_TABLE = AmmtestSQLiteOpenHelper.DATABASE_EXCUTOR_TABLE;
 

@@ -14,6 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import ammtest.tencent.com.accurate.R;
+import ammtest.tencent.com.accurate.adapter.ModulesItem;
 
 /**
  * Created by eureka on 11/12/15.
@@ -119,7 +120,7 @@ public class CaseModel {
         return caseEntryItems;
     }
 
-    public List<CaseEntryItem> getCaseItemsByCaseNames(String name){
+    public List<CaseEntryItem> getCaseItemsByModuleName(String name){
         LinkedList<CaseEntryItem> caseEntryItems = new LinkedList<CaseEntryItem>();
 
         Cursor cursor = resolver.query(CaseProvider.CONTENT_CASEID_URI, projection,
@@ -133,17 +134,20 @@ public class CaseModel {
         return caseEntryItems;
     }
 
-    public List<String> getCaseModules(){
-        List<String> modules = new ArrayList<>();
+    public ArrayList<ModulesItem> getCaseModules(){
+        ArrayList<ModulesItem> modules = new ArrayList<>();
         String[] fileds = new String[] {
                 CaseEntryItem.F_CASE_MODULE,
+                "count(*)"
         };
         Cursor cursor = resolver.query(CaseProvider.CONTENT_CASEID_URI, fileds,
                 " 0=0) group by ("+CaseEntryItem.F_CASE_MODULE, null, null);
         if (cursor.moveToFirst()) {
             do {
                 String moduleName = cursor.getString(0);
-                modules.add(moduleName);
+                int count = cursor.getInt(1);
+                ModulesItem item = new ModulesItem(moduleName, count);
+                modules.add(item);
             } while(cursor.moveToNext());
         }
         return modules;
