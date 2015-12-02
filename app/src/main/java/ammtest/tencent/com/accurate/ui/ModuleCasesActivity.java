@@ -98,9 +98,6 @@ public class ModuleCasesActivity extends BaseActivity {
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             return true;
-        }else if(id == R.id.action_action_refresh){
-            updateCase();
-            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -120,45 +117,5 @@ public class ModuleCasesActivity extends BaseActivity {
         finish();
     }
 
-    private void updateCase(){
-        AmmHttpClient.get("getcases.php", null, new JsonHttpResponseHandler(){
 
-            @Override
-            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, JSONArray response) {
-                super.onSuccess(statusCode, headers, response);
-                Log.i(TAG, response.length() + "");
-                Log.i(TAG, response.toString());
-                for(int i=0; i<response.length(); i++){
-                    try {
-                        JSONObject json = response.getJSONObject(i);
-                        CaseEntryItem caseEntry = new CaseEntryItem(json.getInt(CaseEntryItem.F_ID));
-
-                        caseEntry.setCaseName(json.getString(CaseEntryItem.F_CASE_NAME));
-                        caseEntry.setCaseInput(json.getString(CaseEntryItem.F_CASE_INPUT));
-                        caseEntry.setCaseOutput(json.getString(CaseEntryItem.F_CASE_OUTPUT));
-                        caseEntry.setCaseModule(json.getString(CaseEntryItem.F_CASE_MODULE));
-                        caseEntry.setCaseCheckList(json.getString(CaseEntryItem.F_CASE_CHECK_LIST));
-                        boolean hasContained = false;
-                        for(CaseEntryItem item: caseItems){
-                            if(caseEntry.getCaseId() == item.getCaseId()){
-                                item.updateFrom(caseEntry);
-                                hasContained = true;
-                                mModel.updateCase(caseEntry);
-                                break;
-                            }
-                        }
-                        if(!hasContained){
-                            caseItems.add(caseEntry);
-                            mModel.insertCase(caseEntry);
-                        }
-                        caseEntryAA.notifyDataSetChanged();
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-            }
-        }, false);
-
-    }
 }

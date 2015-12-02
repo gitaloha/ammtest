@@ -309,6 +309,7 @@ public class FloatService extends Service {
             //no next, back to module case list
             finish();
             Intent intent = new Intent(FloatService.this, ModuleCasesActivity.class);
+           // intent.putExtra(Constant.INTENT_MODULE_NAME, this.);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
             return;

@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".ManActivity" >
 
-    <item android:id="@+id/action_action_refresh"
+    <item android:id="@+id/action_refresh"
           android:title="@string/action_action_refresh"
           android:orderInCategory="1"
         />
