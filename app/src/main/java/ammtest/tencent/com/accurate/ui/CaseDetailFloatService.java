@@ -126,8 +126,22 @@ public class CaseDetailFloatService extends Service {
         Log.i(TAG, "Width/2--->" + mLy.getMeasuredWidth() / 2);
         Log.i(TAG, "Height/2--->" + mLy.getMeasuredHeight() / 2);
 
-        TextView stopBtn = (TextView)mFloatLayout.findViewById(R.id.case_float_stop_btn);
-        stopBtn.setOnClickListener(new View.OnClickListener() {
+        TextView backFloatBtn = (TextView)mFloatLayout.findViewById(R.id.case_float_back_float_btn);
+        backFloatBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(CaseDetailFloatService.this, FloatService.class);
+                intent.putExtra(Constant.INTENT_CASE_ID, caseId);
+                //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startService(intent);
+                finish();
+
+            }
+        });
+
+        Button backLaunch = (Button)mFloatLayout.findViewById(R.id.case_float_back_btn);
+        backLaunch.setText(R.string.case_float_main_menu);
+        backLaunch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
@@ -135,9 +149,9 @@ public class CaseDetailFloatService extends Service {
                 intent.putExtra(Constant.INTENT_CASE_REFRESH, false);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
-
             }
         });
+
 
         Button checkBtn = (Button)mFloatLayout.findViewById(R.id.case_check_btn);
         checkBtn.setOnClickListener(new View.OnClickListener() {
@@ -170,34 +184,7 @@ public class CaseDetailFloatService extends Service {
         });
 
 
-        final Button startBtn = (Button)mFloatLayout.findViewById(R.id.case_float_start_btn);
-        startBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                /*
-                if(hasRan()){
-                    startBtn.setText(R.string.case_float_pass);
-                }else{
-                    startBtn.setText(R.string.case_float_start);
-                }
 
-                if(hasRan()){
-                    uploadResult(caseFileName, false);
-                    CaseEntryItem caseEntry = caseList.getNextCase(caseId);
-                    changeToCase(caseEntry);
-                }else{
-                    Intent intent = new Intent(CaseDetailFloatService.this, FloatService.class);
-                    intent.putExtra(Constant.INTENT_CASE_ID, caseId);
-                    startService(intent);
-                    finish();
-                }*/
-                Intent intent = new Intent(CaseDetailFloatService.this, FloatService.class);
-                intent.putExtra(Constant.INTENT_CASE_ID, caseId);
-                //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startService(intent);
-                finish();
-            }
-        });
         TextView caseTv = (TextView)mFloatLayout.findViewById(R.id.case_defail_tv);
         caseTv.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -230,15 +217,13 @@ public class CaseDetailFloatService extends Service {
         if(mFloatLayout == null){
             return;
         }
-        Button startBtn = (Button)mFloatLayout.findViewById(R.id.case_float_start_btn);
+
         Button checkBtn = (Button)mFloatLayout.findViewById(R.id.case_check_btn);
         Button failedBtn = (Button)mFloatLayout.findViewById(R.id.case_float_failed_btn);
         if(hasRan()){
-            startBtn.setText(R.string.case_float_goon);
             checkBtn.setEnabled(true);
             failedBtn.setEnabled(true);
         }else{
-            startBtn.setText(R.string.case_float_goon);
             checkBtn.setEnabled(false);
             failedBtn.setEnabled(false);
         }

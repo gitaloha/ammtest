@@ -9,9 +9,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.List;
+import java.util.Random;
 
 import ammtest.tencent.com.accurate.R;
 import ammtest.tencent.com.accurate.model.CaseEntryItem;
+import ammtest.tencent.com.accurate.model.CaseExcutorItem;
 import ammtest.tencent.com.accurate.model.CaseExecutorModel;
 import ammtest.tencent.com.accurate.network.AccurateClient;
 import ammtest.tencent.com.accurate.util.StringUtil;
@@ -51,8 +53,13 @@ public class MainArrayAdapter extends ArrayAdapter<CaseEntryItem> {
 
         TextView caseIdView = (TextView)caseLy.findViewById(R.id.case_item_id);
         caseIdView.setText(StringUtil.caseIdToStr(item.getCaseId()));
-        caseModule.getExcutorItem(item.getCaseId(), AccurateClient.revision);
-        //TextView inputTv = (TextView)caseLy.findViewById(R.id.main_case_input);
+        List<CaseExcutorItem> excutorItems = caseModule.getExcutorItem(item.getCaseId());
+        TextView countTv = (TextView)caseLy.findViewById(R.id.case_item_num);
+        if (null == excutorItems){
+            countTv.setText(String.valueOf(new Random().nextInt(1)));
+        }else {
+            countTv.setText(String.valueOf(excutorItems.size()));
+        }
         //inputTv.setText(item.getCaseInput());
         return (LinearLayout)caseLy;
 

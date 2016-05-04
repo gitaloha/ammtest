@@ -74,6 +74,24 @@ public class CaseExecutorModel {
         return excutorItem;
     }
 
+    public List<CaseExcutorItem> getExcutorItem(int caseId){
+        List<CaseExcutorItem> caseExcutorsItems = new LinkedList<CaseExcutorItem>();
+        Uri revisionUri = Uri.parse(CaseProvider.CONTENT_EXCUTOR_URI + "/norevision" );
+        Uri uri = ContentUris.withAppendedId(revisionUri, caseId);
+        Cursor cursor = resolver.query(uri, projection, null, null, null);
+        Log.i(TAG, "getExcutorItem:" + caseId );
+        if (null ==cursor || !cursor.moveToFirst()) {
+            return null;
+        }
+        if (cursor.moveToFirst()) {
+            do {
+                CaseExcutorItem caseExcutorItem = mapToExcutorEntry(cursor);
+                caseExcutorsItems.add(caseExcutorItem);
+            } while(cursor.moveToNext());
+        }
+        return caseExcutorsItems;
+    }
+
     public List<CaseExcutorItem> getExcutorsItemsByRevision(String revision){
         List<CaseExcutorItem> caseExcutorsItems = new LinkedList<CaseExcutorItem>();
         Uri revisionUri = Uri.parse(CaseProvider.CONTENT_EXCUTORS_URI +"/"+revision);

@@ -360,6 +360,7 @@ public class FloatService extends Service {
 
     private  void setCaseSuccess(int caseId, String filename){
         CaseExcutorItem excutorItem = new CaseExcutorItem();
+        excutorItem.setCaseId(caseId);
         excutorItem.setExcuteStatus(CaseExcutorItem.EXCUTE_STATUS_SUCCESS);
         mExcutirModel.insert(excutorItem);
         uploadResult(filename, false);

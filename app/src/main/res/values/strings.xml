@@ -34,6 +34,7 @@
 
     <string name="case_float_title">精准测试用例</string>
     <string name="case_float_start">开始</string>
+    <string name="case_float_main_menu">主界面</string>
     <string name="case_float_pass">通过</string>
     <string name="case_float_goon">继续</string>
     <string name="case_float_skip">跳过</string>

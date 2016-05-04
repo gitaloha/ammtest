@@ -38,7 +38,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/back"
-                android:id="@+id/case_float_stop_btn"
+                android:id="@+id/case_float_back_float_btn"
                 android:layout_gravity="right|center"
                 android:textSize="20dp"
                 android:padding="5dp"
@@ -193,7 +193,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/case_float_start"
-                android:id="@+id/case_float_start_btn" />
+                android:id="@+id/case_float_back_btn" />
 
             <Button
                 android:layout_width="wrap_content"

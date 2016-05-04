@@ -25,7 +25,7 @@ public class CaseExcutorItem {
     public static final String F_EXCUTE_REVISION = "excuteRevision";
 
     public CaseExcutorItem() {
-        revision = AccurateClient.revision;
+        revision = "norevision";//AccurateClient.revision;
         excuteStatus = EXCUTE_STATUS_IGNORE;
         excuteUser = User.getInstance().getName();
     }

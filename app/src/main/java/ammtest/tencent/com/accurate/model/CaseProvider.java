@@ -113,11 +113,11 @@ public class CaseProvider extends ContentProvider {
                 break;
             }
             case CASE_EXCUTOR:{
-                String revision = uri.getPathSegments().get(1);
+                //String revision = uri.getPathSegments().get(1);
                 String idStr = uri.getPathSegments().get(2);
                 sqlBuilder.setTables(DB_EXCUTOR_TABLE);
                 sqlBuilder.appendWhere(CaseExcutorItem.F_CASE_ID + "=" + idStr);
-                sqlBuilder.appendWhere(" and "+CaseExcutorItem.F_EXCUTE_REVISION+"='"+revision+"'");
+                //sqlBuilder.appendWhere(" and "+CaseExcutorItem.F_EXCUTE_REVISION+"='"+revision+"'");
                 break;
             }
             case CASE_EXCUTORS:{
